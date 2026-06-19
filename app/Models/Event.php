@@ -32,6 +32,12 @@ class Event extends Model
         return (string) Str::uuid();
     }
 
+    /** Human-readable event title, sourced from the JSON payload. */
+    public function getTitleAttribute(): string
+    {
+        return $this->payload['name'] ?? 'Untitled Event';
+    }
+
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
@@ -42,6 +48,12 @@ class Event extends Model
     public function images(): HasMany
     {
         return $this->hasMany(EventImage::class)->orderBy('sort_order');
+    }
+
+    /** @return HasMany<Attendee, $this> */
+    public function attendees(): HasMany
+    {
+        return $this->hasMany(Attendee::class);
     }
 
     /**

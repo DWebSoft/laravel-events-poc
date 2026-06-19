@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { ArrowLeft, CalendarDays, Clock, ExternalLink, MapPin, Ticket } from '@lucide/vue';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import { ArrowLeft, CalendarDays, CheckCircle2, Clock, ExternalLink, MapPin, Ticket, Users } from '@lucide/vue';
 import { computed, ref } from 'vue';
-import { grid } from '@/actions/App/Http/Controllers/EventController';
+import { grid, storeAttendee } from '@/actions/App/Http/Controllers/EventController';
 import TimeToggle from '@/components/events/TimeToggle.vue';
 import { Badge } from '@/components/ui/badge';
+import { useAttendeeProfile } from '@/composables/useAttendeeProfile';
 import { useTimeMode } from '@/composables/useTimeMode';
 import { formatEventTime } from '@/lib/eventTime';
 import type { EventItem } from '@/types';
@@ -18,8 +19,39 @@ defineOptions({
 });
 
 const { mode, localTimezone } = useTimeMode();
+const { profile, remember, markRegistered, isRegistered, registeredStatus } = useAttendeeProfile();
 
 const activeImage = ref(props.event.images[0]);
+
+// True on return visits to an event this browser already signed up for.
+const registered = computed(() => isRegistered(props.event.id));
+const registeredLabel = computed(() => (registeredStatus(props.event.id) === 'attending' ? 'attending' : 'interested in'));
+
+// Prefill from the remembered profile so repeat registrations are one click.
+const form = useForm<{ name: string; email: string; status: 'interested' | 'attending' }>({
+    name: profile.value.name,
+    email: profile.value.email,
+    status: 'interested',
+});
+
+/** Return to the page we came from (grid/timeline/list); fall back to the grid. */
+function goBack() {
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        router.visit(grid().url);
+    }
+}
+
+function register() {
+    form.post(storeAttendee.url(props.event.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            remember(form.name, form.email);
+            markRegistered(props.event.id, form.status);
+        },
+    });
+}
 
 const starts = computed(() => formatEventTime(props.event.starts_at_utc, props.event.timezone, mode.value, localTimezone));
 const ends = computed(() => formatEventTime(props.event.ends_at_utc, props.event.timezone, mode.value, localTimezone));
@@ -46,9 +78,13 @@ const statusVariant = computed(() => {
     <Head :title="event.title" />
 
     <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-6">
-        <Link :href="grid().url" class="flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+        <button
+            type="button"
+            class="flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+            @click="goBack"
+        >
             <ArrowLeft class="size-4" /> Back to events
-        </Link>
+        </button>
 
         <div class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
             <!-- Gallery -->
@@ -110,12 +146,69 @@ const statusVariant = computed(() => {
                     </div>
                 </dl>
 
-                <button
-                    type="button"
-                    class="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                >
-                    <Ticket class="size-4" /> Register interest
-                </button>
+                <div class="flex flex-col gap-3 rounded-xl border bg-card p-4">
+                    <p class="flex items-center gap-2 text-sm font-medium">
+                        <Users class="size-4 text-muted-foreground" />
+                        {{ (event.attendees_count ?? 0).toLocaleString() }}
+                        {{ (event.attendees_count ?? 0) === 1 ? 'person is' : 'people are' }} interested
+                    </p>
+
+                    <div
+                        v-if="registered"
+                        class="flex items-center gap-2 rounded-lg bg-primary/10 p-3 text-sm font-medium text-primary"
+                    >
+                        <CheckCircle2 class="size-4" /> You're {{ registeredLabel }} this event.
+                    </div>
+
+                    <form v-else class="flex flex-col gap-3" @submit.prevent="register">
+                        <!-- Interested vs. attending -->
+                        <div class="grid grid-cols-2 gap-1 rounded-lg border bg-muted/40 p-1">
+                            <button
+                                type="button"
+                                class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+                                :class="form.status === 'interested' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                @click="form.status = 'interested'"
+                            >
+                                Interested
+                            </button>
+                            <button
+                                type="button"
+                                class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+                                :class="form.status === 'attending' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                @click="form.status = 'attending'"
+                            >
+                                Attending
+                            </button>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <input
+                                v-model="form.name"
+                                type="text"
+                                placeholder="Your name"
+                                class="h-9 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            />
+                            <span v-if="form.errors.name" class="text-xs text-destructive">{{ form.errors.name }}</span>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <input
+                                v-model="form.email"
+                                type="email"
+                                placeholder="you@example.com"
+                                class="h-9 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            />
+                            <span v-if="form.errors.email" class="text-xs text-destructive">{{ form.errors.email }}</span>
+                        </div>
+                        <button
+                            type="submit"
+                            :disabled="form.processing"
+                            class="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                        >
+                            <Ticket class="size-4" />
+                            {{ form.status === 'attending' ? "I'm attending" : "I'm interested" }}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 

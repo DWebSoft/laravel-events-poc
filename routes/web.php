@@ -12,6 +12,7 @@ Route::get('events-grid', [EventController::class, 'grid'])->name('events.grid')
 Route::get('events-timeline', [EventController::class, 'timeline'])->name('events.timeline');
 
 Route::get('events/{event}', [EventController::class, 'show'])->name('events.show')->whereUuid('event');
+Route::post('events/{event}/attendees', [EventController::class, 'storeAttendee'])->name('events.attendees.store')->whereUuid('event');
 
 Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 

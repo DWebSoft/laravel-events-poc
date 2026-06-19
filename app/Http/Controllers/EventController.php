@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAttendeeRequest;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
+use App\Services\AttendeeService;
 use App\Services\LocationResolver;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
@@ -67,11 +70,20 @@ class EventController extends Controller
 
     public function show(Event $event): Response
     {
-        $event->load('images');
+        $event->load('images')->loadCount('attendees');
 
         return Inertia::render('Events/Show', [
             'event' => (new EventResource($event))->resolve(),
         ]);
+    }
+
+    public function storeAttendee(StoreAttendeeRequest $request, Event $event, AttendeeService $attendees): RedirectResponse
+    {
+        $attendees->register($event, $request->validated());
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => "You're on the list — check your email for a confirmation."]);
+
+        return back();
     }
 
     private function renderFeed(string $component, Request $request): Response
