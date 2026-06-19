@@ -29,12 +29,12 @@ const mainNavItems: NavItem[] = [
         icon: ListOrdered,
     },
     {
-        title: 'Events Visual 1',
+        title: 'Events Grid',
         href: '/events-visual-1',
         icon: BarChart3,
     },
     {
-        title: 'Events Visual 2',
+        title: 'Events Timeline',
         href: '/events-visual-2',
         icon: Map,
     },

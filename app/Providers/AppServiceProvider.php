@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\LocationResolver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Shared so its per-coordinate memo cache spans an entire request.
+        $this->app->singleton(LocationResolver::class);
     }
 
     /**

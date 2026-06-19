@@ -21,6 +21,9 @@ class LocationResolver
     /** @var array<string, ResolvedLocation> */
     private array $cache = [];
 
+    /**
+     * @param  list<array{city: string, country: string, lat: float, lng: float, tz: string}>|null  $anchors
+     */
     public function __construct(?array $anchors = null)
     {
         $this->anchors = $anchors ?? config('city_anchors');
