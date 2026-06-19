@@ -79,7 +79,7 @@ class EventController extends Controller
 
     public function storeAttendee(StoreAttendeeRequest $request, Event $event, AttendeeService $attendees): RedirectResponse
     {
-        $attendees->register($event, $request->validated());
+        $attendees->register($event, $request->attendeeData());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "You're on the list — check your email for a confirmation."]);
 
@@ -192,7 +192,7 @@ class EventController extends Controller
     }
 
     /**
-     * @return array{0: LengthAwarePaginator, 1: array{ms: int, bytes: int}}
+     * @return array{0: LengthAwarePaginator<int, Event>, 1: array{ms: int, bytes: int}}
      */
     private function loadListing(Request $request): array
     {
