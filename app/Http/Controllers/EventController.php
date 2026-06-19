@@ -53,16 +53,16 @@ class EventController extends Controller
         ]);
     }
 
-    /** Visual 1 — card grid. */
-    public function visualOne(Request $request): Response
+    /** Events Grid — card grid. */
+    public function grid(Request $request): Response
     {
-        return $this->renderFeed('Events/VisualOne', $request);
+        return $this->renderFeed('Events/Grid', $request);
     }
 
-    /** Visual 2 — timeline. */
-    public function visualTwo(Request $request): Response
+    /** Events Timeline — chronological agenda. */
+    public function timeline(Request $request): Response
     {
-        return $this->renderFeed('Events/VisualTwo', $request);
+        return $this->renderFeed('Events/Timeline', $request);
     }
 
     public function show(Event $event): Response
@@ -137,12 +137,26 @@ class EventController extends Controller
         ];
     }
 
-    /** The viewer's timezone for date filtering; falls back to UTC if absent/invalid. */
+    /**
+     * The viewer's timezone for date filtering; falls back to UTC if absent/invalid.
+     * Validates via DateTimeZone so legacy aliases (e.g. "Asia/Calcutta") that browsers
+     * still report — but `timezone_identifiers_list()` omits — are accepted.
+     */
     private function timezone(Request $request): string
     {
         $tz = $request->input('tz');
 
-        return is_string($tz) && in_array($tz, timezone_identifiers_list(), true) ? $tz : 'UTC';
+        if (! is_string($tz) || $tz === '') {
+            return 'UTC';
+        }
+
+        try {
+            new \DateTimeZone($tz);
+
+            return $tz;
+        } catch (\Exception) {
+            return 'UTC';
+        }
     }
 
     /**

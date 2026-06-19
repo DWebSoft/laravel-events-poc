@@ -3,7 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import { useIntersectionObserver } from '@vueuse/core';
 import { CalendarX2, Loader2 } from '@lucide/vue';
 import { ref } from 'vue';
-import { visualOne } from '@/actions/App/Http/Controllers/EventController';
+import { grid } from '@/actions/App/Http/Controllers/EventController';
 import EventCard from '@/components/events/EventCard.vue';
 import EventFilters from '@/components/events/EventFilters.vue';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,12 +14,12 @@ const props = defineProps<EventFeedProps>();
 
 defineOptions({
     layout: {
-        breadcrumbs: [{ title: 'Events Grid', href: visualOne().url }],
+        breadcrumbs: [{ title: 'Events Grid', href: grid().url }],
     },
 });
 
 const { items, nextCursor, filters, loading, loadingMore, applyFilters, loadMore, resetFilters } = useEventFeed(
-    visualOne().url,
+    grid().url,
     props,
 );
 
@@ -56,7 +56,7 @@ useIntersectionObserver(
         <!-- Skeletons while a filter change is loading the first page -->
         <div v-if="loading && items.length === 0" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <div v-for="n in 8" :key="n" class="flex flex-col gap-3 rounded-xl border p-0">
-                <Skeleton class="aspect-[16/10] w-full rounded-t-xl" />
+                <Skeleton class="aspect-16/10 w-full rounded-t-xl" />
                 <div class="flex flex-col gap-2 p-4 pt-0">
                     <Skeleton class="h-4 w-3/4" />
                     <Skeleton class="h-3 w-full" />

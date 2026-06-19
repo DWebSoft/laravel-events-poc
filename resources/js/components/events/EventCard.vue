@@ -33,7 +33,7 @@ const statusVariant = computed(() => {
         :href="show.url(event.id)"
         class="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
     >
-        <div class="relative aspect-[16/10] overflow-hidden bg-muted">
+        <div class="relative aspect-16/10 overflow-hidden bg-muted">
             <img
                 :src="event.images[0]"
                 :alt="event.title"

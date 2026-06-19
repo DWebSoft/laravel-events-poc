@@ -30,12 +30,12 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Events Grid',
-        href: '/events-visual-1',
+        href: '/events-grid',
         icon: BarChart3,
     },
     {
         title: 'Events Timeline',
-        href: '/events-visual-2',
+        href: '/events-timeline',
         icon: Map,
     },
 ];

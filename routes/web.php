@@ -8,8 +8,8 @@ Route::redirect('/', '/events')->name('home');
 Route::get('events', [EventController::class, 'index'])->name('events.index');
 Route::get('events/data', [EventController::class, 'data'])->name('events.data');
 
-Route::get('events-visual-1', [EventController::class, 'visualOne'])->name('events.visual1');
-Route::get('events-visual-2', [EventController::class, 'visualTwo'])->name('events.visual2');
+Route::get('events-grid', [EventController::class, 'grid'])->name('events.grid');
+Route::get('events-timeline', [EventController::class, 'timeline'])->name('events.timeline');
 
 Route::get('events/{event}', [EventController::class, 'show'])->name('events.show')->whereUuid('event');
 
