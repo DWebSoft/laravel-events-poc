@@ -25,8 +25,12 @@ const feedCache: Record<string, FeedSnapshot> = {};
 export function useEventFeed(pageUrl: string, initial: EventFeedProps) {
     const restored = feedCache[pageUrl] ?? null;
 
-    const items = ref<EventItem[]>(restored ? restored.items : [...initial.events]);
-    const nextCursor = ref<string | null>(restored ? restored.nextCursor : initial.nextCursor);
+    const items = ref<EventItem[]>(
+        restored ? restored.items : [...initial.events],
+    );
+    const nextCursor = ref<string | null>(
+        restored ? restored.nextCursor : initial.nextCursor,
+    );
     const filters = reactive<EventFilterState>({ ...initial.filters });
     const loading = ref(false);
     const loadingMore = ref(false);
@@ -42,13 +46,21 @@ export function useEventFeed(pageUrl: string, initial: EventFeedProps) {
         window.addEventListener('scroll', onScroll, { passive: true });
 
         if (restored) {
-            nextTick(() => requestAnimationFrame(() => window.scrollTo(0, restored.scrollY)));
+            nextTick(() =>
+                requestAnimationFrame(() =>
+                    window.scrollTo(0, restored.scrollY),
+                ),
+            );
         }
     });
 
     onBeforeUnmount(() => {
         window.removeEventListener('scroll', onScroll);
-        feedCache[pageUrl] = { items: items.value, nextCursor: nextCursor.value, scrollY: lastScrollY };
+        feedCache[pageUrl] = {
+            items: items.value,
+            nextCursor: nextCursor.value,
+            scrollY: lastScrollY,
+        };
     });
 
     /** The viewer's IANA timezone, so date filters mean "this day where I am". */
@@ -127,5 +139,14 @@ export function useEventFeed(pageUrl: string, initial: EventFeedProps) {
         applyFilters();
     }
 
-    return { items, nextCursor, filters, loading, loadingMore, applyFilters, loadMore, resetFilters };
+    return {
+        items,
+        nextCursor,
+        filters,
+        loading,
+        loadingMore,
+        applyFilters,
+        loadMore,
+        resetFilters,
+    };
 }

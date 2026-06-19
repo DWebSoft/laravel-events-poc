@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { useIntersectionObserver } from '@vueuse/core';
 import { CalendarX2, Clock, Loader2, MapPin } from '@lucide/vue';
+import { useIntersectionObserver } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { show, timeline } from '@/actions/App/Http/Controllers/EventController';
 import EventFilters from '@/components/events/EventFilters.vue';
@@ -20,25 +20,39 @@ defineOptions({
     },
 });
 
-const { items, nextCursor, filters, loading, loadingMore, applyFilters, loadMore, resetFilters } = useEventFeed(
-    timeline().url,
-    props,
-);
+const {
+    items,
+    nextCursor,
+    filters,
+    loading,
+    loadingMore,
+    applyFilters,
+    loadMore,
+    resetFilters,
+} = useEventFeed(timeline().url, props);
 
 const { mode, localTimezone } = useTimeMode();
 
 /** Group the chronological feed by its (timezone-aware) calendar day. */
 const groups = computed(() => {
     const map = new Map<string, EventItem[]>();
+
     for (const event of items.value) {
-        const key = formatEventTime(event.starts_at_utc, event.timezone, mode.value, localTimezone).date;
+        const key = formatEventTime(
+            event.starts_at_utc,
+            event.timezone,
+            mode.value,
+            localTimezone,
+        ).date;
         const bucket = map.get(key);
+
         if (bucket) {
             bucket.push(event);
         } else {
             map.set(key, [event]);
         }
     }
+
     return Array.from(map, ([date, events]) => ({ date, events }));
 });
 
@@ -53,7 +67,13 @@ useIntersectionObserver(
     { rootMargin: '600px' },
 );
 
-const typedTime = (event: EventItem) => formatEventTime(event.starts_at_utc, event.timezone, mode.value, localTimezone);
+const typedTime = (event: EventItem) =>
+    formatEventTime(
+        event.starts_at_utc,
+        event.timezone,
+        mode.value,
+        localTimezone,
+    );
 </script>
 
 <template>
@@ -62,7 +82,9 @@ const typedTime = (event: EventItem) => formatEventTime(event.starts_at_utc, eve
     <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-6">
         <header class="flex flex-col gap-1">
             <h1 class="text-2xl font-bold tracking-tight">Events Timeline</h1>
-            <p class="text-sm text-muted-foreground">A chronological agenda of what's coming up, grouped by day.</p>
+            <p class="text-sm text-muted-foreground">
+                A chronological agenda of what's coming up, grouped by day.
+            </p>
         </header>
 
         <EventFilters
@@ -75,7 +97,10 @@ const typedTime = (event: EventItem) => formatEventTime(event.starts_at_utc, eve
         />
 
         <!-- Loading skeleton -->
-        <div v-if="loading && items.length === 0" class="flex flex-col gap-4 pl-6">
+        <div
+            v-if="loading && items.length === 0"
+            class="flex flex-col gap-4 pl-6"
+        >
             <div v-for="n in 6" :key="n" class="flex gap-4">
                 <Skeleton class="size-16 shrink-0 rounded-lg" />
                 <div class="flex flex-1 flex-col gap-2 py-1">
@@ -92,13 +117,22 @@ const typedTime = (event: EventItem) => formatEventTime(event.starts_at_utc, eve
         >
             <CalendarX2 class="size-10 text-muted-foreground" />
             <p class="font-medium">No events match your filters</p>
-            <p class="text-sm text-muted-foreground">Try widening the date range or choosing a different location.</p>
+            <p class="text-sm text-muted-foreground">
+                Try widening the date range or choosing a different location.
+            </p>
         </div>
 
         <!-- Timeline -->
-        <div v-else class="relative" :class="{ 'opacity-60 transition-opacity': loading }">
+        <div
+            v-else
+            class="relative"
+            :class="{ 'opacity-60 transition-opacity': loading }"
+        >
             <!-- vertical spine -->
-            <div class="absolute bottom-0 left-1.75 top-2 w-px bg-border" aria-hidden="true" />
+            <div
+                class="absolute top-2 bottom-0 left-1.75 w-px bg-border"
+                aria-hidden="true"
+            />
 
             <section v-for="group in groups" :key="group.date" class="relative">
                 <h2
@@ -111,11 +145,11 @@ const typedTime = (event: EventItem) => formatEventTime(event.starts_at_utc, eve
                     <li
                         v-for="event in group.events"
                         :key="event.id"
-                        class="animate-in fade-in slide-in-from-left-2 fill-mode-both relative pl-6"
+                        class="relative animate-in pl-6 fill-mode-both fade-in slide-in-from-left-2"
                     >
                         <!-- dot -->
                         <span
-                            class="absolute left-0 top-5 size-3.5 rounded-full border-2 border-background bg-primary ring-1 ring-border"
+                            class="absolute top-5 left-0 size-3.5 rounded-full border-2 border-background bg-primary ring-1 ring-border"
                         />
 
                         <Link
@@ -131,21 +165,39 @@ const typedTime = (event: EventItem) => formatEventTime(event.starts_at_utc, eve
                             />
                             <div class="flex min-w-0 flex-1 flex-col gap-1">
                                 <div class="flex items-center gap-2">
-                                    <Badge class="capitalize">{{ event.type }}</Badge>
-                                    <Badge v-if="event.status !== 'published'" variant="secondary" class="capitalize">
+                                    <Badge class="capitalize">{{
+                                        event.type
+                                    }}</Badge>
+                                    <Badge
+                                        v-if="event.status !== 'published'"
+                                        variant="secondary"
+                                        class="capitalize"
+                                    >
                                         {{ event.status.replace('_', ' ') }}
                                     </Badge>
                                 </div>
-                                <h3 class="truncate font-semibold group-hover:text-primary">{{ event.title }}</h3>
-                                <p v-if="event.description" class="line-clamp-2 text-sm text-muted-foreground">
+                                <h3
+                                    class="truncate font-semibold group-hover:text-primary"
+                                >
+                                    {{ event.title }}
+                                </h3>
+                                <p
+                                    v-if="event.description"
+                                    class="line-clamp-2 text-sm text-muted-foreground"
+                                >
                                     {{ event.description }}
                                 </p>
-                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                                <div
+                                    class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground"
+                                >
                                     <span class="flex items-center gap-1.5">
-                                        <Clock class="size-3.5" /> {{ typedTime(event).time }} {{ typedTime(event).zone }}
+                                        <Clock class="size-3.5" />
+                                        {{ typedTime(event).time }}
+                                        {{ typedTime(event).zone }}
                                     </span>
                                     <span class="flex items-center gap-1.5">
-                                        <MapPin class="size-3.5" /> {{ event.location.label }}
+                                        <MapPin class="size-3.5" />
+                                        {{ event.location.label }}
                                     </span>
                                 </div>
                             </div>
@@ -156,11 +208,16 @@ const typedTime = (event: EventItem) => formatEventTime(event.starts_at_utc, eve
         </div>
 
         <!-- Infinite-scroll sentinel -->
-        <div ref="sentinel" class="flex justify-center py-2 text-sm text-muted-foreground">
+        <div
+            ref="sentinel"
+            class="flex justify-center py-2 text-sm text-muted-foreground"
+        >
             <span v-if="loadingMore" class="flex items-center gap-2">
                 <Loader2 class="size-4 animate-spin" /> Loading more…
             </span>
-            <span v-else-if="!nextCursor && items.length > 0">You've reached the end.</span>
+            <span v-else-if="!nextCursor && items.length > 0"
+                >You've reached the end.</span
+            >
         </div>
     </div>
 </template>

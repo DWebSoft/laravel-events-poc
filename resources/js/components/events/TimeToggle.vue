@@ -13,13 +13,21 @@ const { mode, toggle } = useTimeMode();
     >
         <span
             class="rounded-full px-2.5 py-1 transition-colors"
-            :class="mode === 'venue' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'"
+            :class="
+                mode === 'venue'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground'
+            "
         >
             Venue time
         </span>
         <span
             class="rounded-full px-2.5 py-1 transition-colors"
-            :class="mode === 'local' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'"
+            :class="
+                mode === 'local'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground'
+            "
         >
             My time
         </span>

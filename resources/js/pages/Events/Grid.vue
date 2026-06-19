@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { useIntersectionObserver } from '@vueuse/core';
 import { CalendarX2, Loader2 } from '@lucide/vue';
+import { useIntersectionObserver } from '@vueuse/core';
 import { ref } from 'vue';
 import { grid } from '@/actions/App/Http/Controllers/EventController';
 import EventCard from '@/components/events/EventCard.vue';
@@ -18,10 +18,16 @@ defineOptions({
     },
 });
 
-const { items, nextCursor, filters, loading, loadingMore, applyFilters, loadMore, resetFilters } = useEventFeed(
-    grid().url,
-    props,
-);
+const {
+    items,
+    nextCursor,
+    filters,
+    loading,
+    loadingMore,
+    applyFilters,
+    loadMore,
+    resetFilters,
+} = useEventFeed(grid().url, props);
 
 const sentinel = ref<HTMLElement | null>(null);
 useIntersectionObserver(
@@ -41,7 +47,9 @@ useIntersectionObserver(
     <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:p-6">
         <header class="flex flex-col gap-1">
             <h1 class="text-2xl font-bold tracking-tight">Events Grid</h1>
-            <p class="text-sm text-muted-foreground">Concerts, conferences and more — happening around the world.</p>
+            <p class="text-sm text-muted-foreground">
+                Concerts, conferences and more — happening around the world.
+            </p>
         </header>
 
         <EventFilters
@@ -54,8 +62,15 @@ useIntersectionObserver(
         />
 
         <!-- Skeletons while a filter change is loading the first page -->
-        <div v-if="loading && items.length === 0" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <div v-for="n in 8" :key="n" class="flex flex-col gap-3 rounded-xl border p-0">
+        <div
+            v-if="loading && items.length === 0"
+            class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+            <div
+                v-for="n in 8"
+                :key="n"
+                class="flex flex-col gap-3 rounded-xl border p-0"
+            >
                 <Skeleton class="aspect-16/10 w-full rounded-t-xl" />
                 <div class="flex flex-col gap-2 p-4 pt-0">
                     <Skeleton class="h-4 w-3/4" />
@@ -72,7 +87,9 @@ useIntersectionObserver(
         >
             <CalendarX2 class="size-10 text-muted-foreground" />
             <p class="font-medium">No events match your filters</p>
-            <p class="text-sm text-muted-foreground">Try widening the date range or choosing a different location.</p>
+            <p class="text-sm text-muted-foreground">
+                Try widening the date range or choosing a different location.
+            </p>
         </div>
 
         <!-- Card grid -->
@@ -85,17 +102,22 @@ useIntersectionObserver(
                 v-for="(event, index) in items"
                 :key="event.id"
                 :event="event"
-                class="animate-in fade-in slide-in-from-bottom-3 fill-mode-both"
+                class="animate-in fill-mode-both fade-in slide-in-from-bottom-3"
                 :style="{ animationDelay: `${(index % 24) * 35}ms` }"
             />
         </div>
 
         <!-- Infinite-scroll sentinel + status -->
-        <div ref="sentinel" class="flex justify-center py-6 text-sm text-muted-foreground">
+        <div
+            ref="sentinel"
+            class="flex justify-center py-6 text-sm text-muted-foreground"
+        >
             <span v-if="loadingMore" class="flex items-center gap-2">
                 <Loader2 class="size-4 animate-spin" /> Loading more…
             </span>
-            <span v-else-if="!nextCursor && items.length > 0">You've reached the end.</span>
+            <span v-else-if="!nextCursor && items.length > 0"
+                >You've reached the end.</span
+            >
         </div>
     </div>
 </template>

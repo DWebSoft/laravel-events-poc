@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { CalendarClock, Database, Gauge, Image, LayoutGrid, MailCheck, MapPin } from '@lucide/vue';
+import {
+    CalendarClock,
+    Database,
+    Gauge,
+    Image,
+    LayoutGrid,
+    MailCheck,
+    MapPin,
+} from '@lucide/vue';
 import { grid, timeline } from '@/actions/App/Http/Controllers/EventController';
 import { dashboard } from '@/routes';
 
@@ -49,9 +57,12 @@ const features = [
 
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 md:p-6">
         <header class="flex flex-col gap-1">
-            <h1 class="text-2xl font-bold tracking-tight">Event Visuals — POC overview</h1>
+            <h1 class="text-2xl font-bold tracking-tight">
+                Event Visuals — POC overview
+            </h1>
             <p class="text-sm text-muted-foreground">
-                Browse a fully-seeded dataset of 1.25M events across two distinct experiences.
+                Browse a fully-seeded dataset of 1.25M events across two
+                distinct experiences.
             </p>
         </header>
 
@@ -63,8 +74,12 @@ const features = [
             >
                 <LayoutGrid class="size-6 text-primary" />
                 <div>
-                    <p class="font-semibold group-hover:text-primary">Events Grid</p>
-                    <p class="text-sm text-muted-foreground">Responsive image-card browse</p>
+                    <p class="font-semibold group-hover:text-primary">
+                        Events Grid
+                    </p>
+                    <p class="text-sm text-muted-foreground">
+                        Responsive image-card browse
+                    </p>
                 </div>
             </Link>
             <Link
@@ -73,8 +88,12 @@ const features = [
             >
                 <CalendarClock class="size-6 text-primary" />
                 <div>
-                    <p class="font-semibold group-hover:text-primary">Events Timeline</p>
-                    <p class="text-sm text-muted-foreground">Chronological agenda by day</p>
+                    <p class="font-semibold group-hover:text-primary">
+                        Events Timeline
+                    </p>
+                    <p class="text-sm text-muted-foreground">
+                        Chronological agenda by day
+                    </p>
                 </div>
             </Link>
         </div>
@@ -83,30 +102,54 @@ const features = [
         <section class="rounded-xl border bg-card p-5 shadow-sm">
             <div class="mb-3 flex items-center gap-2">
                 <Database class="size-5 text-primary" />
-                <h2 class="text-lg font-semibold">Handling 1.25M events efficiently</h2>
+                <h2 class="text-lg font-semibold">
+                    Handling 1.25M events efficiently
+                </h2>
             </div>
             <p class="mb-4 text-sm text-muted-foreground">
-                The guiding rule: <strong>the cost of any screen is independent of the total row count.</strong>
+                The guiding rule:
+                <strong
+                    >the cost of any screen is independent of the total row
+                    count.</strong
+                >
                 Every page query is bounded to ~24 rows and stays index-backed.
             </p>
 
             <div class="grid gap-5 md:grid-cols-[1.6fr_1fr]">
                 <ul class="flex flex-col gap-2">
-                    <li v-for="(tactic, i) in scaleTactics" :key="i" class="flex gap-2 text-sm">
+                    <li
+                        v-for="(tactic, i) in scaleTactics"
+                        :key="i"
+                        class="flex gap-2 text-sm"
+                    >
                         <Gauge class="mt-0.5 size-4 shrink-0 text-primary" />
                         <span>{{ tactic }}</span>
                     </li>
                 </ul>
 
-                <div class="flex flex-col gap-2 rounded-lg border bg-muted/40 p-4">
-                    <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <div
+                    class="flex flex-col gap-2 rounded-lg border bg-muted/40 p-4"
+                >
+                    <p
+                        class="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                    >
                         Measured on the live 1.25M-row table
                     </p>
-                    <div v-for="metric in perf" :key="metric.label" class="flex items-baseline justify-between">
-                        <span class="text-sm text-muted-foreground">{{ metric.label }}</span>
-                        <span class="font-mono text-sm font-semibold">{{ metric.value }}</span>
+                    <div
+                        v-for="metric in perf"
+                        :key="metric.label"
+                        class="flex items-baseline justify-between"
+                    >
+                        <span class="text-sm text-muted-foreground">{{
+                            metric.label
+                        }}</span>
+                        <span class="font-mono text-sm font-semibold">{{
+                            metric.value
+                        }}</span>
                     </div>
-                    <p class="mt-1 text-xs text-muted-foreground">Each returns a single 24-row page.</p>
+                    <p class="mt-1 text-xs text-muted-foreground">
+                        Each returns a single 24-row page.
+                    </p>
                 </div>
             </div>
         </section>
@@ -125,8 +168,10 @@ const features = [
         </div>
 
         <p class="text-xs text-muted-foreground">
-            Full write-up in <span class="font-mono">README.md</span>. Note: emails are queued
-            (database driver) — run <span class="font-mono">php artisan queue:work</span> to deliver them (Mailpit on :8025).
+            Full write-up in <span class="font-mono">README.md</span>. Note:
+            emails are queued (database driver) — run
+            <span class="font-mono">php artisan queue:work</span> to deliver
+            them (Mailpit on :8025).
         </p>
     </div>
 </template>

@@ -1,8 +1,20 @@
 <script setup lang="ts">
 import { Head, router, useForm } from '@inertiajs/vue3';
-import { ArrowLeft, CalendarDays, CheckCircle2, Clock, ExternalLink, MapPin, Ticket, Users } from '@lucide/vue';
+import {
+    ArrowLeft,
+    CalendarDays,
+    CheckCircle2,
+    Clock,
+    ExternalLink,
+    MapPin,
+    Ticket,
+    Users,
+} from '@lucide/vue';
 import { computed, ref } from 'vue';
-import { grid, storeAttendee } from '@/actions/App/Http/Controllers/EventController';
+import {
+    grid,
+    storeAttendee,
+} from '@/actions/App/Http/Controllers/EventController';
 import TimeToggle from '@/components/events/TimeToggle.vue';
 import { Badge } from '@/components/ui/badge';
 import { useAttendeeProfile } from '@/composables/useAttendeeProfile';
@@ -19,16 +31,25 @@ defineOptions({
 });
 
 const { mode, localTimezone } = useTimeMode();
-const { profile, remember, markRegistered, isRegistered, registeredStatus } = useAttendeeProfile();
+const { profile, remember, markRegistered, isRegistered, registeredStatus } =
+    useAttendeeProfile();
 
 const activeImage = ref(props.event.images[0]);
 
 // True on return visits to an event this browser already signed up for.
 const registered = computed(() => isRegistered(props.event.id));
-const registeredLabel = computed(() => (registeredStatus(props.event.id) === 'attending' ? 'attending' : 'interested in'));
+const registeredLabel = computed(() =>
+    registeredStatus(props.event.id) === 'attending'
+        ? 'attending'
+        : 'interested in',
+);
 
 // Prefill from the remembered profile so repeat registrations are one click.
-const form = useForm<{ name: string; email: string; status: 'interested' | 'attending' }>({
+const form = useForm<{
+    name: string;
+    email: string;
+    status: 'interested' | 'attending';
+}>({
     name: profile.value.name,
     email: profile.value.email,
     status: 'interested',
@@ -53,11 +74,26 @@ function register() {
     });
 }
 
-const starts = computed(() => formatEventTime(props.event.starts_at_utc, props.event.timezone, mode.value, localTimezone));
-const ends = computed(() => formatEventTime(props.event.ends_at_utc, props.event.timezone, mode.value, localTimezone));
+const starts = computed(() =>
+    formatEventTime(
+        props.event.starts_at_utc,
+        props.event.timezone,
+        mode.value,
+        localTimezone,
+    ),
+);
+const ends = computed(() =>
+    formatEventTime(
+        props.event.ends_at_utc,
+        props.event.timezone,
+        mode.value,
+        localTimezone,
+    ),
+);
 
 const mapUrl = computed(
-    () => `https://www.google.com/maps/search/?api=1&query=${props.event.location.lat},${props.event.location.lng}`,
+    () =>
+        `https://www.google.com/maps/search/?api=1&query=${props.event.location.lat},${props.event.location.lng}`,
 );
 
 const statusVariant = computed(() => {
@@ -89,19 +125,37 @@ const statusVariant = computed(() => {
         <div class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
             <!-- Gallery -->
             <div class="flex flex-col gap-3">
-                <div class="aspect-16/10 overflow-hidden rounded-2xl border bg-muted">
-                    <img :src="activeImage" :alt="event.title" class="size-full object-cover" />
+                <div
+                    class="aspect-16/10 overflow-hidden rounded-2xl border bg-muted"
+                >
+                    <img
+                        :src="activeImage"
+                        :alt="event.title"
+                        class="size-full object-cover"
+                    />
                 </div>
-                <div v-if="event.images.length > 1" class="grid grid-cols-4 gap-3">
+                <div
+                    v-if="event.images.length > 1"
+                    class="grid grid-cols-4 gap-3"
+                >
                     <button
                         v-for="(image, i) in event.images"
                         :key="i"
                         type="button"
                         class="aspect-square overflow-hidden rounded-lg border transition-all"
-                        :class="image === activeImage ? 'ring-2 ring-primary' : 'opacity-70 hover:opacity-100'"
+                        :class="
+                            image === activeImage
+                                ? 'ring-2 ring-primary'
+                                : 'opacity-70 hover:opacity-100'
+                        "
                         @click="activeImage = image"
                     >
-                        <img :src="image" :alt="`${event.title} image ${i + 1}`" loading="lazy" class="size-full object-cover" />
+                        <img
+                            :src="image"
+                            :alt="`${event.title} image ${i + 1}`"
+                            loading="lazy"
+                            class="size-full object-cover"
+                        />
                     </button>
                 </div>
             </div>
@@ -111,29 +165,51 @@ const statusVariant = computed(() => {
                 <div class="flex flex-col gap-3">
                     <div class="flex flex-wrap items-center gap-2">
                         <Badge class="capitalize">{{ event.type }}</Badge>
-                        <Badge :variant="statusVariant" class="capitalize">{{ event.status.replace('_', ' ') }}</Badge>
+                        <Badge :variant="statusVariant" class="capitalize">{{
+                            event.status.replace('_', ' ')
+                        }}</Badge>
                     </div>
-                    <h1 class="text-2xl font-bold tracking-tight">{{ event.title }}</h1>
+                    <h1 class="text-2xl font-bold tracking-tight">
+                        {{ event.title }}
+                    </h1>
                 </div>
 
-                <dl class="flex flex-col gap-4 rounded-xl border bg-card p-4 text-sm">
+                <dl
+                    class="flex flex-col gap-4 rounded-xl border bg-card p-4 text-sm"
+                >
                     <div class="flex items-start justify-between gap-3">
-                        <dt class="flex items-center gap-2 font-medium"><CalendarDays class="size-4 text-muted-foreground" /> When</dt>
+                        <dt class="flex items-center gap-2 font-medium">
+                            <CalendarDays
+                                class="size-4 text-muted-foreground"
+                            />
+                            When
+                        </dt>
                         <TimeToggle />
                     </div>
                     <dd class="-mt-2 flex flex-col gap-1">
                         <span class="font-medium">{{ starts.date }}</span>
-                        <span class="flex items-center gap-1.5 text-muted-foreground">
+                        <span
+                            class="flex items-center gap-1.5 text-muted-foreground"
+                        >
                             <Clock class="size-3.5" />
-                            {{ starts.time }}<template v-if="ends.time"> – {{ ends.time }}</template> {{ starts.zone }}
+                            {{ starts.time
+                            }}<template v-if="ends.time">
+                                – {{ ends.time }}</template
+                            >
+                            {{ starts.zone }}
                         </span>
                     </dd>
 
                     <div class="border-t pt-3">
-                        <dt class="flex items-center gap-2 font-medium"><MapPin class="size-4 text-muted-foreground" /> Where</dt>
+                        <dt class="flex items-center gap-2 font-medium">
+                            <MapPin class="size-4 text-muted-foreground" />
+                            Where
+                        </dt>
                         <dd class="mt-1 flex flex-col gap-1">
                             <span v-if="event.venue">{{ event.venue }}</span>
-                            <span class="text-muted-foreground">{{ event.location.label }}</span>
+                            <span class="text-muted-foreground">{{
+                                event.location.label
+                            }}</span>
                             <a
                                 :href="mapUrl"
                                 target="_blank"
@@ -150,23 +226,39 @@ const statusVariant = computed(() => {
                     <p class="flex items-center gap-2 text-sm font-medium">
                         <Users class="size-4 text-muted-foreground" />
                         {{ (event.attendees_count ?? 0).toLocaleString() }}
-                        {{ (event.attendees_count ?? 0) === 1 ? 'person is' : 'people are' }} interested
+                        {{
+                            (event.attendees_count ?? 0) === 1
+                                ? 'person is'
+                                : 'people are'
+                        }}
+                        interested
                     </p>
 
                     <div
                         v-if="registered"
                         class="flex items-center gap-2 rounded-lg bg-primary/10 p-3 text-sm font-medium text-primary"
                     >
-                        <CheckCircle2 class="size-4" /> You're {{ registeredLabel }} this event.
+                        <CheckCircle2 class="size-4" /> You're
+                        {{ registeredLabel }} this event.
                     </div>
 
-                    <form v-else class="flex flex-col gap-3" @submit.prevent="register">
+                    <form
+                        v-else
+                        class="flex flex-col gap-3"
+                        @submit.prevent="register"
+                    >
                         <!-- Interested vs. attending -->
-                        <div class="grid grid-cols-2 gap-1 rounded-lg border bg-muted/40 p-1">
+                        <div
+                            class="grid grid-cols-2 gap-1 rounded-lg border bg-muted/40 p-1"
+                        >
                             <button
                                 type="button"
                                 class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
-                                :class="form.status === 'interested' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                :class="
+                                    form.status === 'interested'
+                                        ? 'bg-background shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                "
                                 @click="form.status = 'interested'"
                             >
                                 Interested
@@ -174,7 +266,11 @@ const statusVariant = computed(() => {
                             <button
                                 type="button"
                                 class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
-                                :class="form.status === 'attending' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                :class="
+                                    form.status === 'attending'
+                                        ? 'bg-background shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                "
                                 @click="form.status = 'attending'"
                             >
                                 Attending
@@ -186,18 +282,26 @@ const statusVariant = computed(() => {
                                 v-model="form.name"
                                 type="text"
                                 placeholder="Your name"
-                                class="h-9 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                class="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                             />
-                            <span v-if="form.errors.name" class="text-xs text-destructive">{{ form.errors.name }}</span>
+                            <span
+                                v-if="form.errors.name"
+                                class="text-xs text-destructive"
+                                >{{ form.errors.name }}</span
+                            >
                         </div>
                         <div class="flex flex-col gap-1">
                             <input
                                 v-model="form.email"
                                 type="email"
                                 placeholder="you@example.com"
-                                class="h-9 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                class="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                             />
-                            <span v-if="form.errors.email" class="text-xs text-destructive">{{ form.errors.email }}</span>
+                            <span
+                                v-if="form.errors.email"
+                                class="text-xs text-destructive"
+                                >{{ form.errors.email }}</span
+                            >
                         </div>
                         <button
                             type="submit"
@@ -205,7 +309,11 @@ const statusVariant = computed(() => {
                             class="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
                         >
                             <Ticket class="size-4" />
-                            {{ form.status === 'attending' ? "I'm attending" : "I'm interested" }}
+                            {{
+                                form.status === 'attending'
+                                    ? "I'm attending"
+                                    : "I'm interested"
+                            }}
                         </button>
                     </form>
                 </div>
@@ -214,7 +322,9 @@ const statusVariant = computed(() => {
 
         <div v-if="event.description" class="flex flex-col gap-2">
             <h2 class="text-lg font-semibold">About this event</h2>
-            <p class="leading-relaxed text-muted-foreground">{{ event.description }}</p>
+            <p class="leading-relaxed text-muted-foreground">
+                {{ event.description }}
+            </p>
         </div>
     </div>
 </template>
